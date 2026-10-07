@@ -100,10 +100,49 @@ export function charWidth(cp: number): number {
   return inRanges(cp, WIDE_RANGES) ? 2 : 1
 }
 
-/** Number of monospace cells the string occupies. */
+const ZWJ = 0x200d
+const EMOJI_PRESENTATION = 0xfe0f
+const TEXT_PRESENTATION = 0xfe0e
+
+const isRegional = (cp: number) => cp >= 0x1f1e6 && cp <= 0x1f1ff
+const isSkinTone = (cp: number) => cp >= 0x1f3fb && cp <= 0x1f3ff
+
+/**
+ * Number of monospace cells the string occupies.
+ *
+ * Counts by glyph cluster, not code point: a flag, a skin tone, a ❤️ turned into an
+ * emoji by a variation selector and a 👨‍👩‍👧 joined with ZWJ each draw as one two cell
+ * glyph, however many code points they are made of.
+ */
 export function stringWidth(text: string): number {
+  const points = Array.from(text, (char) => char.codePointAt(0)!)
   let width = 0
-  for (const char of text) width += charWidth(char.codePointAt(0)!)
+  let i = 0
+
+  while (i < points.length) {
+    if (isRegional(points[i]) && isRegional(points[i + 1] ?? -1)) {
+      width += 2
+      i += 2
+      continue
+    }
+
+    let cell = charWidth(points[i])
+    i += 1
+
+    for (; i < points.length; i += 1) {
+      const next = points[i]
+      if (next === EMOJI_PRESENTATION) cell = 2
+      else if (next === TEXT_PRESENTATION) cell = 1
+      else if (isSkinTone(next)) continue
+      else if (next === ZWJ && i + 1 < points.length) {
+        cell = 2
+        i += 1
+      } else break
+    }
+
+    width += cell
+  }
+
   return width
 }
 

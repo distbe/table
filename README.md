@@ -37,9 +37,10 @@ requires it), and never guessing makes conversion results predictable.
 - **Full-width character widths** — Hangul, Han, Kana and the symbols Unicode marks Wide
   (✅ ❌ ⭐ and the emoji blocks) count as two cells, so columns line up. Arrows, middots and box
   drawing stay at one.
+- Width is counted per **glyph cluster**, so a flag, a skin tone, a ❤️ made into an emoji by a
+  variation selector and a 👨‍👩‍👧 joined with ZWJ each count as the single two-cell glyph they draw as.
 - Lining up on screen also needs one font to supply **both** Latin and CJK, or the two advances
-  disagree and every border drifts; the stack puts CJK-capable coding fonts first for that reason,
-  and the emoji face is scaled with `size-adjust` so a colour emoji occupies exactly two cells.
+  disagree and every border drifts; the stack puts CJK-capable coding fonts first for that reason.
 - **Max cell width** wraps on word boundaries, falling back to character breaks for long words
 - Parsing does not care which border characters are used: Unicode boxes, double lines, `+-|`,
   even a mix of them

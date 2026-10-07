@@ -44,6 +44,19 @@ describe('stringWidth', () => {
   it('keeps arrows, middots and box drawing at one cell', () => {
     expect(stringWidth('→·─│┌')).toBe(5)
   })
+
+  it('counts an emoji cluster once, however many code points it is', () => {
+    expect(stringWidth('❤️')).toBe(2) // variation selector turns it into an emoji
+    expect(stringWidth('⚠️')).toBe(2)
+    expect(stringWidth('👨‍👩‍👧')).toBe(2) // joined with ZWJ
+    expect(stringWidth('👍🏽')).toBe(2) // skin tone modifier
+    expect(stringWidth('🇰🇷')).toBe(2) // regional indicator pair
+    expect(stringWidth('✅😉⭐')).toBe(6)
+  })
+
+  it('honours the text presentation selector', () => {
+    expect(stringWidth('❤︎')).toBe(1)
+  })
 })
 
 describe('parseAscii', () => {
