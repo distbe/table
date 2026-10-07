@@ -328,14 +328,18 @@ export default function TableEditor({ table, onChange }: Props) {
       moveTo(head.row, head.col)
       return
     }
-    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'a') {
-      // The default selects the whole document, so one keystroke could wipe the table.
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'c' && multi) {
       event.preventDefault()
-      const selection = window.getSelection()
-      const node = document.createRange()
-      node.selectNodeContents(event.currentTarget)
-      selection?.removeAllRanges()
-      selection?.addRange(node)
+      copyBlock()
+      return
+    }
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'a') {
+      // Select every cell. The default would select the whole document, and one
+      // keystroke after that could wipe the table.
+      event.preventDefault()
+      window.getSelection()?.removeAllRanges()
+      setAnchor({ row: 0, col: 0 })
+      setHead({ row: rowCount - 1, col: colCount - 1 })
       return
     }
     if (event.shiftKey && (vertical || horizontal)) {
@@ -392,13 +396,44 @@ export default function TableEditor({ table, onChange }: Props) {
     onChange(setCell(table, row, col, node.textContent ?? ''))
   }
 
-  /** Copy the selected block as TSV plus a real table, instead of the focused cell only. */
-  const onCopy = (event: ClipboardEvent<HTMLDivElement>) => {
-    if (!multi) return
-    event.preventDefault()
+  const blockPayload = () => {
     const slice = sliceTable(table, range)
-    event.clipboardData.setData('text/plain', toTsv(slice))
-    event.clipboardData.setData('text/html', serializeHtml(slice, true, range.top === 0))
+    return { text: toTsv(slice), html: serializeHtml(slice, true, range.top === 0) }
+  }
+
+  /**
+   * Each cell is its own editing host, so a DOM selection can never span the block and
+   * the browser's own copy may never fire. The clipboard is written from the key press.
+   */
+  const copyBlock = () => {
+    const { text, html } = blockPayload()
+    if (typeof ClipboardItem === 'undefined' || !navigator.clipboard?.write) {
+      void navigator.clipboard?.writeText(text)
+      return
+    }
+    void navigator.clipboard
+      .write([
+        new ClipboardItem({
+          'text/plain': new Blob([text], { type: 'text/plain' }),
+          'text/html': new Blob([html], { type: 'text/html' }),
+        }),
+      ])
+      .catch(() => navigator.clipboard.writeText(text))
+  }
+
+  /** Still useful when the browser does fire a copy, e.g. from the menu. */
+  const onCopy = (event: ClipboardEvent<HTMLDivElement>) => {
+    if (!multi) {
+      // Nothing highlighted inside the cell: copy the cell rather than nothing at all.
+      if (!window.getSelection()?.isCollapsed) return
+      event.preventDefault()
+      event.clipboardData.setData('text/plain', table.rows[range.top]?.[range.left] ?? '')
+      return
+    }
+    event.preventDefault()
+    const { text, html } = blockPayload()
+    event.clipboardData.setData('text/plain', text)
+    event.clipboardData.setData('text/html', html)
   }
 
   /** Block input whose selection spans several cells, which would break the table markup. */
