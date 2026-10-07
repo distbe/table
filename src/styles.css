@@ -1,0 +1,605 @@
+/* ../webp design system: dark navy with a blue/purple gradient accent */
+:root {
+  --bg: #101826;
+  --panel: #151e2c;
+  --head: #1b2533;
+  --deep: #191c29;
+  --line: rgba(255, 255, 255, 0.05);
+  --line-2: rgba(255, 255, 255, 0.1);
+  --fill: rgba(255, 255, 255, 0.05);
+  --fill-hover: rgba(255, 255, 255, 0.1);
+  --text: #ffffff;
+  --muted: rgba(255, 255, 255, 0.5);
+  --blue: #00bcff;
+  --purple: #dd31d2;
+  --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'D2Coding',
+    'Noto Sans Mono CJK KR', monospace;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font: 300 14px/1.5 -apple-system, BlinkMacSystemFont, 'Pretendard', 'Apple SD Gothic Neo',
+    'Segoe UI', Roboto, sans-serif;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 8px;
+  padding: 8px;
+}
+
+.app-mark {
+  position: fixed;
+  right: 16px;
+  bottom: 12px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.app-mark img {
+  opacity: 0.7;
+}
+
+.app-mark span {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 12px;
+}
+
+/* 2x2: text formats on the left, HTML on the right */
+.layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    'ascii wysiwyg'
+    'markdown html';
+}
+
+.area-ascii {
+  grid-area: ascii;
+}
+.area-markdown {
+  grid-area: markdown;
+}
+.area-wysiwyg {
+  grid-area: wysiwyg;
+}
+.area-html {
+  grid-area: html;
+}
+
+@media (max-width: 900px) {
+  .app {
+    height: auto;
+  }
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: 320px 320px 420px 320px;
+    grid-template-areas: 'ascii' 'markdown' 'wysiwyg' 'html';
+  }
+}
+
+/* Panes */
+.pane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--panel);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.pane-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: var(--head);
+  user-select: none;
+}
+
+.pane-head h2 {
+  margin: 0 auto 0 0;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.pane-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+/* Controls */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 7px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--fill);
+  color: rgba(255, 255, 255, 0.7);
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.12s, color 0.12s;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--fill-hover);
+  color: var(--text);
+}
+
+.btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.btn.danger:hover:not(:disabled) {
+  color: #ff7b72;
+  background: rgba(248, 81, 73, 0.15);
+}
+
+.btn.active,
+.btn.active:hover:not(:disabled) {
+  color: var(--blue);
+  background: rgba(0, 188, 255, 0.15);
+}
+
+.btn.active:hover:not(:disabled) {
+  background: rgba(0, 188, 255, 0.25);
+}
+
+.btn svg {
+  display: block;
+}
+
+select,
+input[type='number'] {
+  height: 24px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--fill);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  outline: 0;
+}
+
+select {
+  appearance: none;
+  min-width: 62px;
+  padding: 0 20px 0 7px;
+  font-family: var(--mono);
+  font-size: 13px;
+  cursor: pointer;
+  /* Tabler chevron-down (MIT) */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-opacity='0.5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6 -6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 3px center;
+}
+
+select:hover {
+  background-color: var(--fill-hover);
+}
+
+input[type='number'] {
+  width: 48px;
+}
+
+select:focus,
+input:focus {
+  box-shadow: 0 0 0 2px var(--blue);
+}
+
+.sep {
+  width: 1px;
+  height: 14px;
+  background: var(--line-2);
+}
+
+/* Code editors */
+.code-wrap {
+  position: relative;
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* The textarea and the highlight layer must lay out glyphs identically to stay aligned. */
+.code {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  margin: 0;
+  resize: none;
+  border: 0;
+  outline: 0;
+  padding: 10px 12px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  /* Keep lines tight so box drawing characters connect vertically. */
+  line-height: 1.25;
+  white-space: pre;
+  overflow: auto;
+  caret-color: var(--blue);
+  tab-size: 2;
+}
+
+textarea.code::placeholder {
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.code-layer {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+textarea.code-input {
+  position: relative;
+  color: transparent;
+}
+
+textarea.code-input::selection {
+  background: rgba(0, 188, 255, 0.3);
+}
+
+.tok-tag {
+  color: #4fc3ff;
+}
+.tok-attr {
+  color: #e58cf0;
+}
+.tok-str {
+  color: #6fe3e8;
+}
+.tok-punct {
+  color: rgba(255, 255, 255, 0.4);
+}
+.tok-comment {
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+}
+
+/* WYSIWYG */
+.group {
+  display: flex;
+  gap: 2px;
+}
+
+.editor-scroll {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 12px;
+}
+
+/* Floating toolbar anchored to the selected block of cells */
+.cell-pop-wrap {
+  position: absolute;
+  z-index: 5;
+  transform: translateY(-100%);
+}
+
+.cell-pop-wrap.below {
+  transform: none;
+}
+
+.cell-pop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  border: 1px solid var(--line-2);
+  border-radius: 8px;
+  background: var(--head);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+table.wysiwyg {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+
+table.wysiwyg th,
+table.wysiwyg td {
+  border: 1px solid var(--line-2);
+  padding: 6px 10px;
+  min-width: 72px;
+  font-size: 13px;
+  font-weight: 300;
+  vertical-align: top;
+  outline: 0;
+  cursor: text;
+}
+
+table.wysiwyg th {
+  background: var(--head);
+  font-weight: 500;
+}
+
+table.wysiwyg th:focus,
+table.wysiwyg td:focus {
+  box-shadow: inset 0 0 0 2px var(--blue);
+}
+
+/* Drag handles laid over the table's border lines (no cells of their own) */
+.handles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.handle {
+  position: absolute;
+  z-index: 2;
+  outline: 0;
+  pointer-events: auto;
+  cursor: grab;
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+/* Everything is centred on the border line it belongs to. */
+.handle-row {
+  width: 12px;
+  margin-left: -6px;
+}
+
+.handle-col {
+  height: 12px;
+  margin-top: -6px;
+}
+
+.handle-corner {
+  width: 12px;
+  height: 12px;
+  margin: -6px 0 0 -6px;
+  cursor: pointer;
+}
+
+/* The block that lights up when the pointer comes near the line */
+.handle-band {
+  position: absolute;
+  border-radius: 5px;
+  background: transparent;
+  transition: background-color 0.12s;
+}
+
+.handle-row .handle-band {
+  inset: 1px 2.5px;
+}
+
+.handle-col .handle-band {
+  inset: 2.5px 1px;
+}
+
+.handle:hover .handle-band {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.handle.on .handle-band {
+  background: rgba(0, 188, 255, 0.28);
+}
+
+/* The bar you actually grab */
+.handle-grip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  transform: translate(-50%, -50%);
+  transition: background-color 0.12s;
+}
+
+.handle-row .handle-grip {
+  width: 3px;
+  height: 60%;
+  max-height: 18px;
+}
+
+.handle-col .handle-grip {
+  width: 60%;
+  max-width: 18px;
+  height: 3px;
+}
+
+.handle:hover .handle-grip {
+  background: #fff;
+}
+
+.handle.on .handle-grip {
+  background: var(--blue);
+}
+
+/* Insert affordance at a handle boundary */
+.handle-add {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 15px;
+  height: 15px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #06121f;
+  font: 600 12px/1 var(--mono);
+  cursor: pointer;
+  opacity: 0;
+  /* Invisible buttons must not swallow drags aimed at the handle. */
+  pointer-events: none;
+  transition: opacity 0.1s;
+}
+
+.handle-row .handle-add {
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.handle-row .handle-add.after {
+  top: 100%;
+}
+
+.handle-col .handle-add {
+  top: 50%;
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+.handle-col .handle-add.after {
+  left: 100%;
+}
+
+.handle:hover .handle-add {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The grab handle and the insert button never light up at the same time */
+.handles.dragging .handle {
+  pointer-events: none;
+}
+
+.handles.dragging .handle-add {
+  opacity: 0;
+}
+
+.handles.inserting .handle:hover .handle-band {
+  background: transparent;
+}
+
+.handles.inserting .handle:hover .handle-grip {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* …except the selected line, which keeps its colour either way */
+.handles.inserting .handle.on .handle-band {
+  background: rgba(0, 188, 255, 0.28);
+}
+
+.handles.inserting .handle.on .handle-grip {
+  background: var(--blue);
+}
+
+/* While a line is being dragged, every cursor says so */
+body.line-dragging,
+body.line-dragging * {
+  cursor: grabbing !important;
+  user-select: none !important;
+}
+
+/* The line being carried */
+.drag-ghost {
+  position: absolute;
+  z-index: 5;
+  background: rgba(0, 188, 255, 0.12);
+  box-shadow: inset 0 0 0 1px rgba(0, 188, 255, 0.45);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Drop indicator while a grip is dragged */
+.drop-line {
+  position: absolute;
+  z-index: 6;
+  background: var(--blue);
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(0, 188, 255, 0.7);
+  pointer-events: none;
+}
+
+.drop-line.row {
+  height: 2px;
+  margin-top: -1px;
+}
+
+.drop-line.col {
+  width: 2px;
+  margin-left: -1px;
+}
+
+/* Where a "+" would insert */
+.drop-line.preview {
+  background: rgba(0, 188, 255, 0.55);
+}
+
+/* Cells inside a dragged selection */
+table.wysiwyg th.sel,
+table.wysiwyg td.sel {
+  background: rgba(0, 188, 255, 0.16);
+}
+
+table.wysiwyg.selecting {
+  user-select: none;
+}
+
+table.wysiwyg.selecting th:focus,
+table.wysiwyg.selecting td:focus {
+  box-shadow: none;
+}
+
+table.wysiwyg th:empty::after,
+table.wysiwyg td:empty::after {
+  content: '';
+  display: inline-block;
+  height: 1.2em;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.15);
+  background-clip: content-box;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.3);
+  background-clip: content-box;
+}
