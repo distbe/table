@@ -34,8 +34,12 @@ requires it), and never guessing makes conversion results predictable.
 ### Text (top left)
 
 - Four border styles: `┌─┬┐` · `╭─┬╮` · `╔═╦╗` · `+--+`
-- **Full-width character widths** — Hangul, Han, Kana and emoji count as two cells, so columns
-  line up. Without this, any table with CJK text is crooked in a monospace font.
+- **Full-width character widths** — Hangul, Han, Kana and the symbols Unicode marks Wide
+  (✅ ❌ ⭐ and the emoji blocks) count as two cells, so columns line up. Arrows, middots and box
+  drawing stay at one.
+- Lining up on screen also needs one font to supply **both** Latin and CJK, or the two advances
+  disagree and every border drifts; the stack puts CJK-capable coding fonts first for that reason,
+  and the emoji face is scaled with `size-adjust` so a colour emoji occupies exactly two cells.
 - **Max cell width** wraps on word boundaries, falling back to character breaks for long words
 - Parsing does not care which border characters are used: Unicode boxes, double lines, `+-|`,
   even a mix of them

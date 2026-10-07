@@ -33,6 +33,17 @@ describe('stringWidth', () => {
     expect(stringWidth('漢字')).toBe(4)
     expect(stringWidth('ab')).toBe(2)
   })
+
+  it('counts wide symbols and emoji as two cells', () => {
+    expect(stringWidth('✅')).toBe(2)
+    expect(stringWidth('❌')).toBe(2)
+    expect(stringWidth('⭐')).toBe(2)
+    expect(stringWidth('🎉')).toBe(2)
+  })
+
+  it('keeps arrows, middots and box drawing at one cell', () => {
+    expect(stringWidth('→·─│┌')).toBe(5)
+  })
 })
 
 describe('parseAscii', () => {
