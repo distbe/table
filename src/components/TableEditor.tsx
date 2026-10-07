@@ -513,9 +513,12 @@ export default function TableEditor({ table, onChange }: Props) {
         <div className={`handles ${drag ? 'dragging' : ''} ${preview ? 'inserting' : ''}`}>
           <div
             className="handle handle-corner"
+            tabIndex={-1}
             title="Select the whole table"
             style={{ top: metrics.box.start, left: metrics.box.cross }}
-            onPointerDown={() => {
+            onPointerDown={(event) => {
+              event.preventDefault()
+              event.currentTarget.focus()
               keepSelection.current = true
               setAnchor({ row: 0, col: 0 })
               setHead({ row: rowCount - 1, col: colCount - 1 })

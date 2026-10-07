@@ -64,10 +64,11 @@ requires it), and never guessing makes conversion results predictable.
 - **Drag across cells to select a block**, or extend the selection with <kbd>Shift</kbd>+click and
   <kbd>Shift</kbd>+arrows. Copying a block writes just that block — TSV as plain text and a real
   `<table>` as rich text — so you can lift a few rows straight into a sheet or a document
-- **One popover follows the selection** and carries everything that acts on it: alignment, empty
-  the selected cells, and — when a whole row or column is selected from its handle — delete it.
-  There is no context menu to hunt for. Operations apply to the whole selection: three selected
-  rows delete three rows, and dragging a handle inside the selection moves the whole block
+- **One popover follows the selection**, carrying only what fits its shape: alignment for cells,
+  plus an eraser once more than one is selected, and a single delete button when a whole row or
+  column is picked up by its handle — the highlight already says which one. There is no context
+  menu to hunt for. Operations apply to the whole selection: three selected rows delete three
+  rows, and dragging a handle inside the selection moves the whole block
 - <kbd>Tab</kbd> next cell, <kbd>Shift+Tab</kbd> previous, <kbd>Enter</kbd>/<kbd>↑</kbd><kbd>↓</kbd>
   up and down. <kbd>Tab</kbd> in the last cell appends a row. <kbd>Esc</kbd> collapses the selection
 - Paste a table copied from Excel, Google Sheets or a web page and it lands as the whole table

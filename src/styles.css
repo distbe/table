@@ -390,6 +390,8 @@ table.wysiwyg td:focus {
 }
 
 .handle-corner {
+  /* Overlaps the first row and column handle, so it has to win the hit test. */
+  z-index: 3;
   width: 12px;
   height: 12px;
   margin: -6px 0 0 -6px;
